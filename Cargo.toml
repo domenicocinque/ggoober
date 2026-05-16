@@ -2,6 +2,9 @@
 name = "ggober"
 version = "0.1.0"
 edition = "2024"
+description = "Clean removable build and cache artifacts from code folders"
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.102"
