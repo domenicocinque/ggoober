@@ -3,6 +3,7 @@ use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
 #[command(name = "ggober")]
+#[command(version)]
 #[command(about = "Clean removable build and cache artifacts from code folders")]
 pub struct Cli {
     /// Root directory to scan

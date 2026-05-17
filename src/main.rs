@@ -98,10 +98,11 @@ fn write_scan_progress(
 }
 
 fn run(cli: Cli) -> Result<()> {
-    let term = Term::stdout();
+    let output = Term::stdout();
+    let progress = Term::stderr();
 
     if !cli.delete {
-        term.write_line(&format!(
+        output.write_line(&format!(
             "{}",
             style("Performing dry run. Use --delete to remove files").color256(245)
         ))?;
@@ -109,38 +110,38 @@ fn run(cli: Cli) -> Result<()> {
 
     let mut matches = MatchList::new();
     let mut scanned_paths = 0;
-    write_scan_progress(&term, scanned_paths, &matches, None)?;
+    write_scan_progress(&progress, scanned_paths, &matches, None)?;
 
     for event in Scanner::new(&cli.root, cli.max_depth, cli.profile) {
         match event? {
             ScanEvent::Visited => {
                 scanned_paths += 1;
                 if scanned_paths % PROGRESS_UPDATE_INTERVAL == 0 {
-                    write_scan_progress(&term, scanned_paths, &matches, None)?;
+                    write_scan_progress(&progress, scanned_paths, &matches, None)?;
                 }
             }
             ScanEvent::Sizing(path) => {
                 scanned_paths += 1;
-                write_scan_progress(&term, scanned_paths, &matches, Some(("sizing", &path)))?;
+                write_scan_progress(&progress, scanned_paths, &matches, Some(("sizing", &path)))?;
             }
             ScanEvent::Match(mtch) => {
                 let path = mtch.path.clone();
                 matches.push(mtch);
-                write_scan_progress(&term, scanned_paths, &matches, Some(("matched", &path)))?;
+                write_scan_progress(&progress, scanned_paths, &matches, Some(("matched", &path)))?;
             }
         }
     }
 
-    term.clear_line()?;
+    progress.clear_line()?;
 
-    term.write_line(&format!(
+    output.write_line(&format!(
         "\rFound {} deletable paths totaling {:.2} GB",
         style(matches.len()).cyan(),
         style(bytes_to_gigabytes(matches.total_size())).cyan()
     ))?;
 
     if cli.delete {
-        delete_matches(&term, &matches, cli.auto_approve)?;
+        delete_matches(&output, &matches, cli.auto_approve)?;
     }
 
     Ok(())
