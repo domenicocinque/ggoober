@@ -6,6 +6,13 @@ By default it performs a dry run and only reports what it would delete. Use
 `--delete` to remove matches, or `--delete --auto-approve` to remove everything
 without per-target confirmation.
 
+## Installation
+
+```sh
+# Install from crates.io
+cargo install ggober
+```
+
 ## Usage
 
 ```sh
